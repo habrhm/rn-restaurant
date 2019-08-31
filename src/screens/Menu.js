@@ -19,9 +19,10 @@ class Menu extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            orderedData: [],
             categories: categories,
             menus: menus,
-            time: 360,
+            time: 0,
             timer: null,
             modalVisible: false,
             transactionData: {
@@ -37,9 +38,31 @@ class Menu extends Component {
     async componentDidMount() {
         let timer = setInterval(() => (
             this.setState(state => (
-                { time: state.time - 1 }
+                { time: state.time + 1 }
             ))
-        ), 1000);
+        ), 1000)
+        let interval = setInterval(async () => {
+            await Axios.patch(`http://192.168.42.100:3000/api/v1/transaction/orders/${this.state.transactionData.id}`, {})
+            const orderData = await Axios.get(`http://192.168.42.100:3000/api/v1/transaction/orders/${this.state.transactionData.id}`);
+            let orderDataWithMenu = []
+            if (!orderData) {
+                //error
+            } else {
+                orderData.data.forEach((value) => {
+                    orderDataWithMenu = [...orderDataWithMenu,
+                    {
+                        ...value,
+                        menu: this.props.menus.data.filter((item) => (item.id === value.menuId))[0]
+                    }
+                    ]
+                })
+            }
+
+            await this.setState({
+                //modalVisible: visible,
+                orderedData: orderDataWithMenu
+            });;
+        }, 60000)
         await this.props.getCategoryData()
         await this.props.getMenuData()
         await this.props.getOrderData()
@@ -55,13 +78,34 @@ class Menu extends Component {
     }
 
     async setModalVisible(visible) {
-        this.setState({ modalVisible: visible });
+        const orderData = await Axios.get(`http://192.168.42.100:3000/api/v1/transaction/orders/${this.state.transactionData.id}`);
+        let orderDataWithMenu = []
+        if (!orderData) {
+            //error
+        } else {
+            orderData.data.forEach((value) => {
+                orderDataWithMenu = [...orderDataWithMenu,
+                {
+                    ...value,
+                    menu: this.props.menus.data.filter((item) => (item.id === value.menuId))[0]
+                }
+                ]
+            })
+        }
+
+        await this.setState({
+            modalVisible: visible,
+            orderedData: orderDataWithMenu
+        });
+        console.log(this.state.orderedData);
+
         let total = 0
-        this.props.orders.data.forEach((value, index) => {
-            if (value.status === 1) {
-                total = total + value.price
-            }
+        this.state.orderedData.forEach((value, index) => {
+
+            total = total + value.price
+
         })
+
         await this.setState({
             transactionData: {
                 ...this.state.transactionData,
@@ -75,10 +119,9 @@ class Menu extends Component {
 
     }
 
-    async sendData() {
-        let res
+    sendOrders() {
         this.props.orders.data.forEach(async (value) => {
-            res = await Axios.post("http://192.168.1.110:3000/api/v1/order",
+            res = await Axios.post("http://192.168.42.100:3000/api/v1/order",
                 {
                     menuId: value.menuId,
                     transactionId: value.transactionId,
@@ -89,41 +132,46 @@ class Menu extends Component {
             if (!res) {
                 alert('gagal Kirim')
             }
+            this.props.moveOrdersToSent()
         })
-        const {transactionData} = this.state
-        res = await Axios.patch(`http://192.168.1.110:3000/api/v1/transaction/${transactionData.id}`,
-            {
-                tableNumber: transactionData.tableNumber,
-                finishedTime: ((this.state.time - 360) * - 1).toString,
-                subtotal: transactionData.subTotal,
-                discount: transactionData.discount,
-                serviceCharge: transactionData.serviceCharge,
-                tax: transactionData.tax,
-                total: transactionData.total,
-                isPaid: false
-            })
-        if (!res) {
-            alert('gagal Kirim')
+
+    }
+
+    async payOrders() {
+        let res
+        const { transactionData } = this.state
+        if (this.state.orderedData.filter(value => value.status === 0).length === 0) {
+            res = await Axios.patch(`http://192.168.42.100:3000/api/v1/transaction/${transactionData.id}`,
+                {
+                    tableNumber: transactionData.tableNumber,
+                    finishedTime: (this.state.time).toString,
+                    subtotal: transactionData.subTotal,
+                    discount: transactionData.discount,
+                    serviceCharge: transactionData.serviceCharge,
+                    tax: transactionData.tax,
+                    total: transactionData.total,
+                    isPaid: false
+                })
+            if (!res) {
+                alert('gagal Kirim')
+            }
+            this.props.navigation.navigate('OrderComplete', { id: transactionData.id })
+        } else {
+            alert('Status belum KIRIM semua')
         }
-        this.props.navigation.navigate('OrderComplete', {id : transactionData.id})
 
     }
 
 
     handleConfirm() {
-        const unOrdered = this.props.orders.data.filter((value) => (value.status == 0))
+
         Alert.alert(
             'Konfirmasi',
             'Apakan pesanan sudah selesai?',
             [
                 {
                     text: 'OK', onPress: () => {
-                        unOrdered.forEach(data => {
-                            this.props.editOrders({
-                                ...data,
-                                status: 1
-                            })
-                        })
+                        this.sendOrders()
                     }
                 },
                 {
@@ -135,12 +183,7 @@ class Menu extends Component {
             ],
             { cancelable: false },
         );
-        console.log('====================================');
-        console.log(unOrdered);
-        console.log('====================================');
-
     }
-
     render() {
         let category = {
             data: this.state.categories
@@ -154,9 +197,7 @@ class Menu extends Component {
             category = this.props.category
         }
         const { orders } = this.props
-        if (this.state.time === 0) {
-            clearInterval(this.state.timer)
-        }
+
         return (
             <Container>
                 <Header hasTabs>
@@ -177,9 +218,9 @@ class Menu extends Component {
                             this.handleConfirm();
                         }}
                     />
-                    <Button disabled={orders.data.length === 0} title='Bayar'
+                    <Button disabled={this.state.orderedData.length === 0} title='Bayar'
                         onPress={() => {
-                            this.sendData()
+                            this.payOrders()
                         }}
                     />
                     <Button title='Lihat tagihan'
@@ -214,13 +255,14 @@ class Menu extends Component {
                                 />
                             </View>
                             <FlatList
-                                data={this.props.orders.data.filter((value) => (value.status == 1))}
-                                extraData={this.props.orders}
+                                data={this.state.orderedData}
+                                extraData={this.state}
                                 style={{
                                     height: "65%"
                                 }}
                                 renderItem={({ item, index }) => (
                                     <View style={{ flexDirection: 'row', justifyContent: "space-between" }}>
+                                        <Text>{item.status === 0 ? 'TUNGGU' : 'KIRIM'}</Text>
                                         <Text>{item.menu.name} : {item.qty}</Text>
                                         <Text>{item.price}</Text>
                                     </View>
@@ -254,7 +296,7 @@ class Menu extends Component {
                                 </View>
                                 <Button title='Bayar'
                                     onPress={() => {
-                                        this.sendData()
+                                        this.payOrders()
                                     }}
                                 />
                             </View>
@@ -272,16 +314,15 @@ const mapDispatchToProps = dispatch => {
         getCategoryData: () => dispatch(categoryActions.getData()),
         getMenuData: () => dispatch(menuActions.getData()),
         getOrderData: () => dispatch(orderActions.getOrders()),
+        moveOrdersToSent: () => dispatch(orderActions.moveOrdersToSent()),
         editOrders: (value) => dispatch(orderActions.editOrders(value)),
     }
 }
 const mapStateToProps = state => {
     return {
         category: state.category,
-
         menus: state.menus,
         orders: state.orders,
-
     }
 }
 export default connect(

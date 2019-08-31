@@ -14,7 +14,7 @@ export default class Login extends Component {
     };
   }
   handlePress = async () => {
-      const res = await Axios.post("http://192.168.1.110:3000/api/v1/transaction", {
+      const res = await Axios.post("http://192.168.42.100:3000/api/v1/transaction", {
         tableNumber : parseInt(this.state.table),
         isPaid : false
       }) 

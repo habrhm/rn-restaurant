@@ -25,8 +25,12 @@ import AsyncStorage from '@react-native-community/async-storage';
             status : 0,
             menu : item
         }
+
         if(order.length == 0){
-        this.props.addOrders(orderToSend)
+            this.props.addOrders({
+                ...orderToSend,
+                id : this.props.orders.data.length + this.props.orders.sentData.length + 1
+            })
         }else{
             this.props.editOrders({
                 ...orderToSend,

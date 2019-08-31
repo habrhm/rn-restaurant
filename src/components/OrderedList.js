@@ -41,7 +41,7 @@ class List extends Component {
 
             <View>
                 <FlatList
-                    data={this.props.orders.data.filter((value) => (value.status == 0))}
+                    data={this.props.orders.data}
                     extraData={this.props.orders}
                     horizontal={true}
                     renderItem={({ item, index }) => (

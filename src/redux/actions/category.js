@@ -5,7 +5,7 @@ export const getData = () => ({
   type: "GET_CATEGORIES",
   payload: axios({
     method: 'GET',
-    url: "http://192.168.1.110:3000/api/v1/categories"
+    url: "http://192.168.42.100:3000/api/v1/categories"
   })
 })
 

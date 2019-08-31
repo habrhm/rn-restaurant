@@ -10,14 +10,18 @@ export default class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      table : '',
+      code : '',
     };
   }
   handlePress = async () => {
 
-          
-      await AsyncStorage.setItem('table',this.state.table)
-      this.props.navigation.navigate('Menu',{table : this.state.table})
+    if(this.state.code === 'ahsiap'){
+       await Axios.patch(`http://192.168.42.100:3000/api/v1/transaction/${this.props.navigation.getParam('id')}`, {isPaid : true}).then().catch(err => alert(err))
+        this.props.navigation.navigate('ChooseTable')
+    }else{
+        alert('Kode Salah')
+    }       
+    
    
 
      
@@ -46,24 +50,25 @@ export default class Login extends Component {
             paddingBottom: 20,
           }]}
         > #{this.props.navigation.getParam('id')} </Text>
-        {/* <Input 
+        <Input 
           value={this.state.username}
-          placeholder='No Meja'
+          placeholder='Verification Code'
           leftIcon={{ type: 'ionicon', name: 'md-person', color:'#fff' }}
           inputContainerStyle={{borderWidth : 1, borderRadius : 30, borderColor : 'white',}}
           placeholderTextColor={'#cfcfcf'}
           inputStyle={styles.text}
+          secureTextEntry={true}
           containerStyle={{marginBottom : 20}}
-          onChangeText={(text) => this.handleChange(text, 'table')}
+          onChangeText={(text) => this.handleChange(text, 'code')}
         />
-       
         <Button 
           title={'Submit'}
           containerStyle={{alignSelf : 'stretch', marginBottom : 20 }}
           titleStyle={styles.text}
           buttonStyle={{backgroundColor: colors.primary.normal, borderRadius : 20}}
           onPress={this.handlePress}
-        /> */}
+        />
+      
 
       </View>
     );
