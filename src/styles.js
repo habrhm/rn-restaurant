@@ -1,8 +1,9 @@
+import {StyleSheet} from 'react-native';
 const colors = {
     primary : {
-        normal : '#3949ab' ,
-        light : '#6f74dd',
-        dark : '00227b',
+        normal : '#ff8f00' ,
+        light : '#ffc046',
+        dark : '#c56000',
     },
     secondary : {
         normal : '#d32f2f' ,
@@ -15,6 +16,18 @@ const colors = {
     }
     
 }
+const styles = StyleSheet.create({
+    textLight: {
+        fontFamily: 'Montserrat-Regular',
+        fontWeight: 'normal',
+        color: colors.text.white,
+    }, 
+    textDark: {
+        fontFamily: 'Montserrat-Regular',
+        fontWeight: 'normal',
+        color: colors.text.black,
+    }
+})
 
-export {colors}
+export {colors, styles}
 

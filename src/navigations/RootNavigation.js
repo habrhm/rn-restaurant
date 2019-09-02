@@ -1,8 +1,8 @@
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 
 import ChooseTable from '../screens/ChooseTable'
-import OrderComplete from '../screens/OrderComplete';
-import Menu from '../screens/Menu';
+import OrderComplete from '../screens/OrderComplete'
+import Menu from '../screens/Menu'
 const switchNav = createSwitchNavigator(
     {
         ChooseTable : {
@@ -21,4 +21,4 @@ const switchNav = createSwitchNavigator(
 )
 const RootNavigation = createAppContainer(switchNav)
 
-export default RootNavigation;
+export default RootNavigation

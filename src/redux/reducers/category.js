@@ -1,4 +1,4 @@
-//import * as types from './../types';
+//import * as types from './../types'
 
 const initialState = {
   isLoading: false,
@@ -14,24 +14,24 @@ export default function category(state = initialState, action) {
       return {
         ...state,
         isLoading: true
-      };
+      }
     case "GET_CATEGORIES_FULFILLED":
       return {
         ...state,
         isLoading: false,
         data: action.payload.data
-      };
+      }
     case "GET_CATEGORIES_REJECTED":
       return {
         ...state,
         isLoading: false,
         error: payload.message
-      };
+      }
     // case types.ADD_TODO:
     //   return {
     //     ...state,
     //     data: state.data.concat(action.payload)
-    //   };
+    //   }
     // case types.EDIT_TODOS:
     //   const newTodo = state.data.map(item => {
     //     if (item.id === action.payload.id) {
@@ -43,7 +43,7 @@ export default function category(state = initialState, action) {
     //   return {
     //     ...state,
     //     data: newTodo
-    //   };
+    //   }
     // case types.REMOVE_TODOS:
     //   const removeTodo = state.data.filter(item => item.id !== action.payload)
     //   return {

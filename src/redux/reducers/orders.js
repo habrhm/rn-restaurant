@@ -17,7 +17,7 @@ export default function orders(state = initialState, action) {
       return {
         ...state,
         data: state.data.concat(action.payload)
-      };
+      }
       case "MOVE_TO_SENT_ORDERS":
         return {
           ...state,
@@ -27,7 +27,7 @@ export default function orders(state = initialState, action) {
         //   }),
           
           data : [],
-        };
+        }
     case "EDIT_ORDERS":
       const newTodo = state.data.map(item => {
         if (item.menuId === action.payload.menuId) {
@@ -38,7 +38,7 @@ export default function orders(state = initialState, action) {
       return {
         ...state,
         data: newTodo
-      };
+      }
     case "REMOVE_ORDERS":
       const removeTodo = state.data.filter(item => item.menuId !== action.payload)
       return {

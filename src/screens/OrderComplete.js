@@ -1,23 +1,25 @@
-import React, { Component } from 'react';
-import { View,  TouchableNativeFeedback, StyleSheet } from 'react-native';
-import {Text, Input, Button} from 'react-native-elements';
+import React, { Component } from 'react'
+import { View,  TouchableNativeFeedback, StyleSheet } from 'react-native'
+import {Text, Input, Button} from 'react-native-elements'
 
-import {colors} from '../styles';
-import Axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
+import {colors} from '../styles'
+import Axios from 'axios'
+import AsyncStorage from '@react-native-community/async-storage'
 
 export default class Login extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       code : '',
-    };
+    }
   }
   handlePress = async () => {
 
     if(this.state.code === 'ahsiap'){
-       await Axios.patch(`http://192.168.42.100:3000/api/v1/transaction/${this.props.navigation.getParam('id')}`, {isPaid : true}).then().catch(err => alert(err))
+        await Axios.patch(`http://192.168.1.48:3000/api/v1/transaction/${this.props.navigation.getParam('id')}`, {isPaid : true}).then().catch(err => alert(err))
+        await AsyncStorage.removeItem('transaction')
         this.props.navigation.navigate('ChooseTable')
+        
     }else{
         alert('Kode Salah')
     }       
@@ -71,7 +73,7 @@ export default class Login extends Component {
       
 
       </View>
-    );
+    )
   }
 }
 

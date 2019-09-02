@@ -1,7 +1,7 @@
-import { combineReducers } from 'redux';
-import category from './category';
-import menus from './menus';
-import orders from './orders';
+import { combineReducers } from 'redux'
+import category from './category'
+import menus from './menus'
+import orders from './orders'
 
 const appReducer = combineReducers({
   category,
