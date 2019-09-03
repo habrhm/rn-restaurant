@@ -8,6 +8,10 @@ const convertToRupiah = (angka) =>
 const toMinute = (time) => {
     let minutes = Math.floor(time / 60);
     let seconds = time - minutes * 60;
+
+    minutes = minutes.toString().padStart(2, 0)
+    seconds =seconds.toString().padStart(2, 0)
+    
     return `${minutes}:${seconds}`
 }
 export {convertToRupiah, toMinute}

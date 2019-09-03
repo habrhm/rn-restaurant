@@ -1,9 +1,9 @@
 import {StyleSheet} from 'react-native';
 const colors = {
     primary : {
-        normal : '#ff8f00' ,
-        light : '#ffc046',
-        dark : '#c56000',
+        normal : '#ff5722' ,
+        light : '#ff8a50',
+        dark : '#c41c00',
     },
     secondary : {
         normal : '#d32f2f' ,

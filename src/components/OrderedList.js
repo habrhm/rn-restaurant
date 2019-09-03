@@ -35,14 +35,22 @@ class List extends Component {
 
     render() {
         return (
-            <View>
+            <View style={{
+                flex: 1,
+
+                paddingHorizontal: 3
+            }}>
                 <FlatList
                     data={this.props.orders.data}
                     extraData={this.props.orders}
+                    keyExtractor={item => item.menuId}
                     horizontal={true}
-                    renderItem={({ item, }) => (
+                    style={{
+                        flex: 1,
+                    }}
+                    renderItem={({ item }) => (
                         <TouchableOpacity
-                            key={item.id}
+                            key={item.menuid}
                             onPress={
                                 this.handleAddOrder(item)
                             }
@@ -60,13 +68,13 @@ class List extends Component {
                                                 flex: 1
                                             }} />
                                         <View
-                                            style={[ {
+                                            style={[{
                                                 ...StyleSheet.absoluteFillObject,
                                                 width: 20,
                                                 height: 20,
-                                                borderRadius : 20/2,
+                                                borderRadius: 20 / 2,
                                                 top: 5,
-                                                left : 5,
+                                                left: 5,
                                                 textAlign: "right",
                                                 backgroundColor: colors.primary.light,
                                                 justifyContent: 'center',
@@ -78,10 +86,12 @@ class List extends Component {
                                                 style={[globalStyles.textLight]}
                                             >{item.qty}</Text></View>
                                     </CardItem>
-
-                                    <Text style={globalStyles.textDark}>{item.menu.name}</Text>
-                                    <Text style={globalStyles.textDark}>{convertToRupiah(item.price)}</Text>
-
+                                    <View
+                                    style={{paddingHorizontal : 3}}
+                                    >
+                                        <Text style={globalStyles.textDark}>{item.menu.name}</Text>
+                                        <Text style={globalStyles.textDark}>{convertToRupiah(item.price)}</Text>
+                                    </View>
                                 </Card>
                             </View>
                         </TouchableOpacity>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View, Alert, StyleSheet } from 'react-native'
-import { Text, Input, Button } from 'react-native-elements'
+import { Text, Input, Button, Icon } from 'react-native-elements'
 
 import { colors, styles as globalStyles } from '../styles'
 import Axios from 'axios'
@@ -55,26 +55,31 @@ export default class Login extends Component {
       <View
         style={styles.wrapper}
       >
-
+        <Icon
+          type='ionicon'
+          name='md-restaurant'
+          size={200}
+          color='white'
+        />
         <Text
           style={[globalStyles.textLight, {
-            fontSize: 60,
+            fontSize: 30,
             paddingBottom: 20,
             textAlign : 'center'
           }]}
-        > Masukan Nomor Meja </Text>
+        > Kedai Pendiri </Text>
         <Input
           value={this.state.username}
-          placeholder='No Meja'
+          placeholder='Masukan Nomor Meja'
           keyboardType={'number-pad'}
-          inputContainerStyle={{ borderWidth: 1, borderRadius: 30, borderColor: colors.text.white, }}
+          inputContainerStyle={{ borderWidth: 1, borderRadius: 5, borderColor: colors.text.white, }}
           placeholderTextColor={'#f5f5f5'}
           inputStyle={[globalStyles.textLight, {textAlign : 'center'}]}
           containerStyle={{ marginBottom: 20 }}
           onChangeText={(text) => this.handleChange(text, 'table')}
         />
         <Button
-          title={'Submit'}
+          title={'Konfirmasi'}
           loading={this.state.isLoading}
           loadingStyle={{color : 'white'}}
           disabled={this.state.isLoading}
@@ -83,13 +88,15 @@ export default class Login extends Component {
           }}
           containerStyle={{
             alignSelf: 'stretch',
-            marginBottom: 20
+            marginBottom: 20,
+            marginHorizontal : 11
           }}
           titleStyle={globalStyles.textLight}
           buttonStyle={{
             backgroundColor: colors.primary.light,
-            borderRadius: 20,
+            borderRadius: 5,
             height: 40,
+
           }}
           onPress={this.handlePress}
         />

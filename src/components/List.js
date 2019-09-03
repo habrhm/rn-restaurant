@@ -63,9 +63,9 @@ class List extends Component {
         return (
             <View>
                 <FlatList
-                    numColumns={3}
+                    numColumns={2}
                     style={styles.container}
-                    data={this.formatRow(data, 3)}
+                    data={this.formatRow(data, 2)}
                     data={data}
                     //  contentContainerStyle={{justifyContent: 'space-around'}}
                     keyExtractor={(item => item.id)}
@@ -85,12 +85,17 @@ class List extends Component {
                                             resizeMode={"cover"}
                                             source={{ uri: item.image }} 
                                             style={{ 
-                                                height: Dimensions.get('window').width / 3, 
+                                                height: Dimensions.get('window').width / 2, 
                                                 width: null, 
                                                 flex: 1 }} />
                                     </CardItem>
+                                    <View style={{
+                                        paddingHorizontal : 5,
+                                        paddingBottom: 5,
+                                    }}>
                                     <Text style={globalStyles.textDark}>{item.name}</Text>
                                     <Text style={globalStyles.textDark}>{convertToRupiah(item.price)}</Text>
+                                    </View>
                                 </Card>
                             </TouchableOpacity>
                         );
@@ -105,7 +110,7 @@ class List extends Component {
 const styles = StyleSheet.create({
     container: {
         //flex: 1,
-        margin: 10,
+        margin: 3,
     },
     item: {
         //   //backgroundColor: '#6495ED',

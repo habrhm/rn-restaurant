@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, Alert, StyleSheet, FlatList, Dimensions } from 'react-native'
+import { View, Text, Alert, StyleSheet, FlatList, Dimensions, ActivityIndicator } from 'react-native'
 import { Container, Tabs, Tab, Header, Left, Body, ScrollableTab, Right } from 'native-base'
 import Modal from 'react-native-modal';
 import { Button, Divider } from 'react-native-elements'
@@ -25,7 +25,7 @@ class Menu extends Component {
             orderedData: [],
             categories: categories,
             menus: menus,
-            time: 0,
+            time: 600,
             timer: null,
             modalVisible: false,
             transactionData: {
@@ -41,7 +41,7 @@ class Menu extends Component {
     async componentDidMount() {
         let timer = setInterval(() => (
             this.setState(state => (
-                { time: state.time + 1 }
+                { time: state.time - 1 }
             ))
         ), 1000)
         let interval = setInterval(async () => {
@@ -80,7 +80,6 @@ class Menu extends Component {
             },
             timer
         })
-
     }
 
     async setModalVisible(visible) {
@@ -142,7 +141,7 @@ class Menu extends Component {
                     total: total * 0 + total + total * 5 / 100 + total * 10 / 100
                 }
             })
-            this.props.moveOrdersToSent()
+            this.props.clearOrders()
         })
 
     }
@@ -154,7 +153,7 @@ class Menu extends Component {
             res = await Axios.patch(`http://192.168.1.48:3000/api/v1/transaction/${transactionData.id}`,
                 {
                     tableNumber: transactionData.tableNumber,
-                    finishedTime: (this.state.time).toString,
+                    finishedTime: toMinute(600 - this.state.time),
                     subtotal: transactionData.subTotal,
                     discount: transactionData.discount,
                     serviceCharge: transactionData.serviceCharge,
@@ -165,6 +164,7 @@ class Menu extends Component {
             if (!res) {
                 alert('gagal Kirim')
             }
+            this.props.clearOrders()
             this.props.navigation.navigate('OrderComplete', { id: transactionData.id })
         } else {
             alert('Status belum KIRIM semua')
@@ -207,7 +207,10 @@ class Menu extends Component {
             category = this.props.category
         }
         const { orders } = this.props
-
+        if (this.state.time < 1) {
+           // alert('Waktu Habis')
+            clearInterval(this.state.timer)
+        }
         return (
             <Container>
                 <Header
@@ -217,31 +220,36 @@ class Menu extends Component {
                     androidStatusBarColor={colors.primary.normal}
                 >
                     <Left
-                        
+
                     >
                         <Text
-                        style={[globalStyles.textLight, {
-                            fontSize : 20,
-                            textAlign : 'center',
-                            borderWidth: 0.5 ,
-                            borderColor : 'white',
-                            
-                            borderRadius : 25/2,
-                            width : 25,
-                            height : 25,
-                        }]}
+                            style={[globalStyles.textLight, {
+                                fontSize: 20,
+                                textAlign: 'center',
+                                borderWidth: 0.5,
+                                borderColor: 'white',
+                                borderRadius: 25 / 2,
+                                width: 25,
+                                height: 25,
+                            }]}
                         >
-                    {this.state.transactionData.tableNumber}</Text>
+                            {this.state.transactionData.tableNumber}</Text>
                     </Left>
                     <Body>
-                        
+
                     </Body>
                     <Right>
                         <Text
-                            style={[globalStyles.textLight, {fontSize : 20}]}
+                            style={[globalStyles.textLight, { fontSize: 20 }]}
                         >{(toMinute(this.state.time))}</Text>
                     </Right>
                 </Header>
+
+                {this.props.menus.isLoading && (
+                    <View style={{flexGrow : 1, justifyContent : 'center'}}>
+                        <ActivityIndicator size={50} color={colors.primary.light} />
+                    </View>
+                )}
                 {!this.props.menus.isLoading && (
                     <Tabs
                         renderTabBar={() => <ScrollableTab />}
@@ -260,80 +268,101 @@ class Menu extends Component {
                         ))}
                     </Tabs>
                 )}
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-evenly'
-                    }}
-                >
-                    <Button
-                        disabled={orders.data.filter((value) => (value.status === 0)).length === 0}
-                        title={'Konfirmasi'}
-                        containerStyle={{
-                            alignSelf: 'stretch',
-                            marginBottom: 20
-                        }}
-                        titleStyle={globalStyles.textLight}
-                        buttonStyle={{
-                            backgroundColor: colors.primary.light,
-                            borderRadius: 20,
-                            height: 40,
-                        }}
-                        onPress={() => {
-                            this.handleConfirm()
-                        }}
-                    />
-                    <Button
-                        disabled={this.state.orderedData.length === 0} 
-                        title='Bayar'
-                        containerStyle={{
-                            alignSelf: 'stretch',
-                            marginBottom: 20
-                        }}
-                        titleStyle={globalStyles.textLight}
-                        buttonStyle={{
-                            backgroundColor: colors.primary.light,
-                            borderRadius: 20,
-                            height: 40,
-                        }}
-                        onPress={() => {
-                            this.payOrders()
-                        }}
-                    />
-                    <Button
-                        title='Lihat tagihan'
-                        containerStyle={{
-                            alignSelf: 'stretch',
-                            marginBottom: 20
-                        }}
-                        titleStyle={globalStyles.textLight}
-                        buttonStyle={{
-                            backgroundColor: colors.primary.light,
-                            borderRadius: 20,
-                            height: 40,
-                        }}
-                        onPress={() => {
-                            this.setModalVisible(!this.state.modalVisible)
-                        }}
-                    />
-                </View>
-                <View style={{minHeight : 120}}>
+
+                <View style={{ minHeight: 120, flexDirection: 'row-reverse', backgroundColor: colors.primary.normal, }}>
+                    <View
+
+                    >
+                        <Button
+                            disabled={orders.data.filter((value) => (value.status === 0)).length === 0}
+                            title={'Konfirmasi'}
+                            containerStyle={{
+                                alignSelf: 'stretch',
+                            }}
+                            titleStyle={globalStyles.textLight}
+                            buttonStyle={{
+                                backgroundColor: colors.primary.light,
+                                borderRadius: 5,
+                                margin: 5,
+                                width: 113,
+                                height: 100,
+
+                            }}
+                            onPress={() => {
+                                this.handleConfirm()
+                            }}
+                        />
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-evenly',
+                                padding: 3,
+                            }}
+                        >
+                            <Button
+                                disabled={this.state.orderedData.length === 0}
+                                icon={{
+                                    type: 'ionicon',
+                                    name: 'md-cash',
+                                    color: this.state.orderedData.length === 0 ? 'grey' : 'white'
+
+                                }}
+                                containerStyle={{
+                                    alignSelf: 'stretch',
+                                }}
+                                titleStyle={globalStyles.textLight}
+                                buttonStyle={{
+                                    backgroundColor: colors.primary.light,
+                                    margin: 5,
+                                    borderRadius: 5,
+                                    height: 50,
+                                    width: 50,
+                                }}
+                                onPress={() => {
+                                    this.payOrders()
+                                }}
+                            />
+                            <Button
+                                //title='L'
+                                icon={{
+                                    type: 'ionicon',
+                                    name: 'md-list-box',
+                                    color: 'white'
+
+                                }}
+                                containerStyle={{
+                                    alignSelf: 'stretch',
+                                }}
+                                titleStyle={globalStyles.textLight}
+                                buttonStyle={{
+                                    backgroundColor: colors.primary.light,
+                                    margin: 5,
+                                    borderRadius: 5,
+                                    height: 50,
+                                    width: 50,
+                                }}
+                                onPress={() => {
+                                    this.setModalVisible(!this.state.modalVisible)
+                                }}
+                            />
+                        </View>
+                    </View>
                     {orders.data.length !== 0 && (
                         <OrderedList />
                     )}
                 </View>
                 <Modal
-                    
+
                     isVisible={this.state.modalVisible}
                     onRequestClose={() => {
                         this.setModalVisible(!this.state.modalVisible)
                     }}
-                    
-                    >
+
+                >
                     <View style={{
-                        height: Dimensions.get("screen").height * 80/100,
+                        height: Dimensions.get("screen").height * 80 / 100,
                         backgroundColor: 'white',
-                        borderWidth : 0.5
+                        borderWidth: 0.5
                     }}>
 
                         <View
@@ -342,7 +371,7 @@ class Menu extends Component {
                                 marginBottom: 5,
                                 padding: 10,
                                 borderBottomWidth: 0.5,
-                                backgroundColor : colors.primary.normal
+                                backgroundColor: colors.primary.normal
                             }}
                         >
                             <Button
@@ -355,7 +384,7 @@ class Menu extends Component {
                                 buttonStyle={{
                                     padding: 1,
                                     paddingVertical: 2,
-                                    backgroundColor: 'red',
+                                    backgroundColor: colors.primary.normal,
                                     borderRadius: 50
                                 }}
                                 onPress={() => {
@@ -371,20 +400,21 @@ class Menu extends Component {
 
                             }}
                         >
-                            <View>
+                            <View style={{ flexGrow: 1 }}>
                                 <FlatList
                                     data={this.state.orderedData}
                                     extraData={this.state}
+                                    style={{ flex: 1 }}
                                     renderItem={({ item, index }) => (
                                         <View style={{ flexDirection: 'row', justifyContent: "space-evenly" }}>
                                             <Text style={[globalStyles.textDark, {
                                                 marginRight: 5,
                                                 width: 70,
                                                 color: item.status === 0 ? 'red' : 'green',
-                                                fontSize: 16 
+                                                fontSize: 16
                                             }]}>{item.status === 0 ? 'TUNGGU' : 'KIRIM'}</Text>
-                                            <Text style={[globalStyles.textDark, { flexGrow: 1 },{ fontSize: 16 } ]}>{item.menu.name} : {item.qty}</Text>
-                                            <Text style={[globalStyles.textDark,{ fontSize: 16 }]}>{convertToRupiah(item.price)}</Text>
+                                            <Text style={[globalStyles.textDark, { flexGrow: 1 }, { fontSize: 16 }]}>{item.menu.name} : {item.qty}</Text>
+                                            <Text style={[globalStyles.textDark, { fontSize: 16 }]}>{convertToRupiah(item.price)}</Text>
                                         </View>
                                     )}
                                 />
@@ -392,11 +422,11 @@ class Menu extends Component {
 
                             <View
                             >
-                                <Divider 
-                                style={{
-                                    marginVertical : 5,
-                                    borderBottomWidth : 2
-                                }}
+                                <Divider
+                                    style={{
+                                        marginVertical: 5,
+                                        borderBottomWidth: 2
+                                    }}
                                 />
                                 <View style={{ flexDirection: 'row', justifyContent: "space-between" }}>
                                     <Text style={[globalStyles.textDark, { fontSize: 16 }]}>Subtotal</Text>
@@ -414,21 +444,21 @@ class Menu extends Component {
                                     <Text style={[globalStyles.textDark, { fontSize: 16 }]}>Tax (10%)</Text>
                                     <Text style={[globalStyles.textDark, { fontSize: 16 }]}>{convertToRupiah(this.state.transactionData.tax)}</Text>
                                 </View>
-                                <Divider 
-                                style={{
-                                    marginVertical : 5,
-                                    borderBottomWidth : 1
-                                }}
+                                <Divider
+                                    style={{
+                                        marginVertical: 5,
+                                        borderBottomWidth: 1
+                                    }}
                                 />
                                 <View style={{ flexDirection: 'row', justifyContent: "space-between" }}>
                                     <Text style={[globalStyles.textDark, { fontSize: 16 }]}>Total</Text>
                                     <Text style={[globalStyles.textDark, { fontSize: 16 }]}>{convertToRupiah(this.state.transactionData.total)}</Text>
                                 </View>
-                                <Divider 
-                                style={{
-                                    marginVertical : 5,
-                                    borderBottomWidth : 2
-                                }}
+                                <Divider
+                                    style={{
+                                        marginVertical: 5,
+                                        borderBottomWidth: 2
+                                    }}
                                 />
                                 <Button title='Bayar'
                                     containerStyle={{
@@ -437,7 +467,7 @@ class Menu extends Component {
                                     titleStyle={globalStyles.textLight}
                                     buttonStyle={{
                                         backgroundColor: colors.primary.light,
-                                        borderRadius: 20,
+                                        borderRadius: 5,
                                         height: 40,
                                     }}
                                     onPress={() => {
@@ -457,7 +487,7 @@ const mapDispatchToProps = dispatch => {
         getCategoryData: () => dispatch(categoryActions.getData()),
         getMenuData: () => dispatch(menuActions.getData()),
         getOrderData: () => dispatch(orderActions.getOrders()),
-        moveOrdersToSent: () => dispatch(orderActions.moveOrdersToSent()),
+        clearOrders: () => dispatch(orderActions.clearOrders()),
         editOrders: (value) => dispatch(orderActions.editOrders(value)),
     }
 }

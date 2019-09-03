@@ -3,8 +3,8 @@
 export const getOrders = () => ({
   type: "GET_ORDERS"
 })
-export const moveOrdersToSent = () => ({
-  type: "MOVE_TO_SENT_ORDERS"
+export const clearOrders = () => ({
+  type: "CLEAR_ORDERS"
 })
 
 export const addOrders = value => ({
