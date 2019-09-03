@@ -11,7 +11,6 @@ Kedai Pendiri is self service restaurant app. With this app you can see all the 
 
 <p float="left">
   <img src="https://imgur.com/IZeitVj.png" width="200" />
-
   <img src="https://imgur.com/YJy4G6r.png" width="200"  />
   <img src="https://imgur.com/qXwEOTz.png" width="200"  />
   <img src="https://imgur.com/2p11BuD.png" width="200"  />
@@ -20,10 +19,12 @@ Kedai Pendiri is self service restaurant app. With this app you can see all the 
 
 ## Features
 * See all the menu available
-* Order whateven menu you want
+* Order whatever menu you want
 
+## App Presentation Slides
+[<img width=75 src="https://cdn.dribbble.com/users/198461/screenshots/1087053/attachments/135506/Google_Slides_Icon.png">](https://docs.google.com/presentation/d/1ZgTQygFUm1zwzqYLAUjzFEC81Ti6blAnYH1-vRQs2qI/edit?usp=sharing)
 
-## Why AbahKos?
+## Why Kedai Pendiri?
 * It's React Native, so it support android & iOS by default!
 * Simple Code, so you can easily contribute on it.
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, TouchableNativeFeedback, StyleSheet } from 'react-native'
+import { View, TouchableNativeFeedback,StatusBar, StyleSheet } from 'react-native'
 import { Text, Input, Button } from 'react-native-elements'
 
 import { colors, styles as globalStyles } from '../styles'
@@ -39,7 +39,7 @@ export default class Login extends Component {
       <View
         style={styles.wrapper}
       >
-
+        <StatusBar backgroundColor={colors.primary.normal} barStyle="light-content" />
         <Text
           style={[styles.text, {
             fontSize: 30,
@@ -63,13 +63,13 @@ export default class Login extends Component {
         >Kode transaksi : #{this.props.navigation.getParam('id')} </Text>
         <Input
           value={this.state.username}
-          placeholder='Kode Reset'
+          placeholder='Kode Konfirmasi'
           inputContainerStyle={{
             borderWidth: 1,
             borderRadius: 5,
             borderColor: 'white',
           }}
-          placeholderTextColor={'#cfcfcf'}
+          placeholderTextColor={'#f5f5f5'}
           inputStyle={[styles.text, {margin : 0}]}
           secureTextEntry={true}
           inputStyle={[globalStyles.textLight, {textAlign : 'center'}]}
@@ -77,7 +77,7 @@ export default class Login extends Component {
           onChangeText={(text) => this.handleChange(text, 'code')}
         />
         <Button
-          title={'Reset'}
+          title={'Kembali ke Pilih Meja'}
           containerStyle={{ alignSelf: 'stretch', marginBottom: 20, marginHorizontal : 11 }}
           titleStyle={styles.text}
           buttonStyle={{ backgroundColor: colors.primary.light, borderRadius: 5,

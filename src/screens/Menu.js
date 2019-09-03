@@ -208,8 +208,17 @@ class Menu extends Component {
         }
         const { orders } = this.props
         if (this.state.time < 1) {
-           // alert('Waktu Habis')
+            // alert('Waktu Habis')
             clearInterval(this.state.timer)
+            Axios.patch(`http://192.168.1.48:3000/api/v1/transaction/orders/${this.state.transactionData.id}`, {})
+                .then(
+                    (data) => {
+                        alert('Waktu pemesanan habis')
+                        this.payOrders();
+                    }
+                )
+
+
         }
         return (
             <Container>
@@ -236,7 +245,13 @@ class Menu extends Component {
                             {this.state.transactionData.tableNumber}</Text>
                     </Left>
                     <Body>
-
+                        <Text
+                            style={[globalStyles.textLight, {
+                                fontSize: 25,
+                                paddingBottom: 20,
+                                textAlign: 'center'
+                            }]}
+                        > Kedai Pendiri </Text>
                     </Body>
                     <Right>
                         <Text
@@ -246,7 +261,7 @@ class Menu extends Component {
                 </Header>
 
                 {this.props.menus.isLoading && (
-                    <View style={{flexGrow : 1, justifyContent : 'center'}}>
+                    <View style={{ flexGrow: 1, justifyContent: 'center' }}>
                         <ActivityIndicator size={50} color={colors.primary.light} />
                     </View>
                 )}
@@ -300,11 +315,11 @@ class Menu extends Component {
                             }}
                         >
                             <Button
-                                disabled={this.state.orderedData.length === 0}
+                                disabled={this.state.orderedData.length === 0 || this.state.orderedData.filter(value => value.status === 0).length > 0}
                                 icon={{
                                     type: 'ionicon',
                                     name: 'md-cash',
-                                    color: this.state.orderedData.length === 0 ? 'grey' : 'white'
+                                    color: (this.state.orderedData.length === 0 || this.state.orderedData.filter(value => value.status === 0).length > 0) ? 'grey' : 'white'
 
                                 }}
                                 containerStyle={{
@@ -433,15 +448,15 @@ class Menu extends Component {
                                     <Text style={[globalStyles.textDark, { fontSize: 16 }]}>{convertToRupiah(this.state.transactionData.subTotal)}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: "space-between" }}>
-                                    <Text style={[globalStyles.textDark, { fontSize: 16 }]}>Discount</Text>
+                                    <Text style={[globalStyles.textDark, { fontSize: 16 }]}>Diskon</Text>
                                     <Text style={[globalStyles.textDark, { fontSize: 16 }]}>{convertToRupiah(this.state.transactionData.discount)}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: "space-between" }}>
-                                    <Text style={[globalStyles.textDark, { fontSize: 16 }]}>Services Charge(5%)</Text>
+                                    <Text style={[globalStyles.textDark, { fontSize: 16 }]}>Biaya Layanan (5%)</Text>
                                     <Text style={[globalStyles.textDark, { fontSize: 16 }]}>{convertToRupiah(this.state.transactionData.serviceCharge)}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: "space-between" }}>
-                                    <Text style={[globalStyles.textDark, { fontSize: 16 }]}>Tax (10%)</Text>
+                                    <Text style={[globalStyles.textDark, { fontSize: 16 }]}>Pajak (10%)</Text>
                                     <Text style={[globalStyles.textDark, { fontSize: 16 }]}>{convertToRupiah(this.state.transactionData.tax)}</Text>
                                 </View>
                                 <Divider
@@ -461,6 +476,7 @@ class Menu extends Component {
                                     }}
                                 />
                                 <Button title='Bayar'
+                                    disabled={this.state.orderedData.length === 0 || this.state.orderedData.filter(value => value.status === 0).length > 0}
                                     containerStyle={{
                                         alignSelf: 'stretch',
                                     }}

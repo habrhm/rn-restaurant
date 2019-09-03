@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Alert, StyleSheet } from 'react-native'
+import { View, Alert, StyleSheet, StatusBar } from 'react-native'
 import { Text, Input, Button, Icon } from 'react-native-elements'
 
 import { colors, styles as globalStyles } from '../styles'
@@ -55,6 +55,8 @@ export default class Login extends Component {
       <View
         style={styles.wrapper}
       >
+        
+        <StatusBar backgroundColor={colors.primary.normal} barStyle="light-content" />
         <Icon
           type='ionicon'
           name='md-restaurant'
